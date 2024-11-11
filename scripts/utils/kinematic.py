@@ -48,6 +48,7 @@ def get_kinematic_model_derivatives(x, u, dt, wheelbase, N):
     df_du[:, 3, 1] = (2 * N_velo * dt / wheelbase) * np.cos(N_beta) * N_beta_over_stl
 
     # Put time horizon at the innermost dimension to satisfy the output formats
+    # transpose: 交换x,y,z轴
     return df_dx.transpose(1, 2, 0), df_du.transpose(1, 2, 0)
 
 

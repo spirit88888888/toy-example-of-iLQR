@@ -49,23 +49,23 @@ class CILQR:
         self.nx = 4
         self.nu = 2
         self.state_weight = np.array(
-            [[1.0, 0., 0., 0.],
-             [0., 1.0, 0., 0.],
-             [0., 0., 0.5, 0.],
+            [[1., 0., 0., 0.],
+             [0., 1., 0., 0.],
+             [0., 0., 0.1, 0.],
              [0., 0., 0., 0.]])
         self.ctrl_weight = np.array(
             [[1.0, 0.0],
-             [0.0, 1.0]])
-        self.exp_q1 = 5.5
-        self.exp_q2 = 5.75
+             [0.0, 2.0]])
+        self.exp_q1 = 2.    # for the barrier function f = q1 * exp(q2 * c)
+        self.exp_q2 = 6.    # for the barrier function f = q1 * exp(q2 * c)
 
         # iteration-related settings
-        self.max_iter = 50
-        self.init_lamb = 20
-        self.lamb_decay = 0.7
-        self.lamb_amplify = 2.0
+        self.max_iter = 100
+        self.init_lamb = 1.0     # regularization parameter
+        self.lamb_decay = 0.7   # decay rate for regularization parameter
+        self.lamb_amplify = 2.0 # amplify rate for regularization parameter
         self.max_lamb = 10000.0
-        self.alpha_options = [1., 0.5, 0.25, 0.125, 0.0625]
+        self.alpha_options = [1., 0.5, 0.25, 0.125, 0.0625]     # step rate for line search
         self.tol = 0.001
 
         # ego vehicle-related settings
@@ -286,8 +286,8 @@ class CILQR:
             kinematic.get_kinematic_model_derivatives(x, u, self.dt, self.wheelbase, self.N)
 
         delt_V = 0
-        V_x = l_x[:, -1]
-        V_xx = l_xx[:, :, -1]
+        V_x = l_x[:, -1]        # V_x: J over x at the final time step
+        V_xx = l_xx[:, :, -1]   # V_xx: J over xx at the final time step
 
         d = np.zeros((self.nu, self.N))
         K = np.zeros((self.nu, self.nx, self.N))
@@ -308,8 +308,8 @@ class CILQR:
 
             # gains
             df_du_regu = df_du[:, :, i].T @ regu_I
-            Q_ux_regu = Q_ux + df_du_regu @ df_dx[:, :, i]
-            Q_uu_regu = Q_uu + df_du_regu @ df_du[:, :, i]
+            Q_ux_regu = Q_ux + df_du_regu @ df_dx[:, :, i]      # regularized version of Q_ux, apply lamb to V_xx
+            Q_uu_regu = Q_uu + df_du_regu @ df_du[:, :, i]      # regularized version of Q_uu, apply lamb to V_xx
             Q_uu_inv = np.linalg.inv(Q_uu_regu)
 
             d[:, i] = -Q_uu_inv @ Q_u

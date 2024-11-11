@@ -11,7 +11,19 @@ from utils import cubic_spline
 
 # LQR parameter
 lqr_Q = np.eye(5)
+lqr_Q = [
+    [1.0, 0.0, 0.0, 0.0, 0.0],
+    [0.0, 1.0, 0.0, 0.0, 0.0],
+    [0.0, 0.0, 10.0, 0.0, 0.0],
+    [0.0, 0.0, 0.0, 1.0, 0.0],
+    [0.0, 0.0, 0.0, 0.0, 1.0]
+]
 lqr_R = np.eye(2)
+lqr_R = [
+    [5.0, 0.0],
+    [0.0, 5.0]
+]
+
 dt = 0.1    # time tick[s]
 max_steer = np.deg2rad(40.0)  # maximum steering angle[rad]
 max_acc = 5

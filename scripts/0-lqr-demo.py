@@ -16,7 +16,7 @@ def solve_dare(A: np.matrix, B: np.matrix,
         if (abs(p_next - p)).max() < eps:
             break
         p = p_next
-
+    print(f"DARE solved in {i+1} iterations")
     return p_next
 
 
